@@ -4,7 +4,7 @@
 
 This library wraps the Fit API in [RxJava](https://github.com/ReactiveX/RxJava) Observables and Singles. No more managing GoogleApiClients! Also, the authorization process for using fitness data is handled by the lib.
 
-See the [2.x branch](https://github.com/patloew/RxFit/tree/2.x) for a RxJava 2 version of this library.
+**The 1.x version of this library is now deprecated. Please upgrade to the RxJava 2 version of this library, available at the [2.x branch](https://github.com/patloew/RxFit/tree/2.x).**
 
 # Usage
 
