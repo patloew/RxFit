@@ -57,7 +57,9 @@ abstract class BaseObservable<T> extends BaseRx<T> implements ObservableOnSubscr
         try {
             apiClient.connect();
         } catch (Throwable ex) {
-            subscriber.onError(ex);
+            if (!subscriber.isDisposed()) {
+                subscriber.onError(ex);
+            }
         }
 
         subscriber.setCancellable(() -> {
@@ -103,13 +105,17 @@ abstract class BaseObservable<T> extends BaseRx<T> implements ObservableOnSubscr
             try {
                 onGoogleApiClientReady(apiClient, subscriber);
             } catch (Throwable ex) {
-                subscriber.onError(ex);
+                if (!subscriber.isDisposed()) {
+                    subscriber.onError(ex);
+                }
             }
         }
 
         @Override
         public void onConnectionSuspended(int cause) {
-            subscriber.onError(new GoogleAPIConnectionSuspendedException(cause));
+            if (!subscriber.isDisposed()) {
+                subscriber.onError(new GoogleAPIConnectionSuspendedException(cause));
+            }
         }
 
         @Override
@@ -124,7 +130,10 @@ abstract class BaseObservable<T> extends BaseRx<T> implements ObservableOnSubscr
                     ctx.startActivity(intent);
                 }
             } else {
-                subscriber.onError(new GoogleAPIConnectionException("Error connecting to GoogleApiClient.", connectionResult));
+                if (!subscriber.isDisposed()) {
+                    subscriber.onError(new GoogleAPIConnectionException(
+                            "Error connecting to GoogleApiClient.", connectionResult));
+                }
             }
         }
 

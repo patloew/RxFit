@@ -57,7 +57,9 @@ abstract class BaseSingle<T> extends BaseRx<T> implements SingleOnSubscribe<T> {
         try {
             apiClient.connect();
         } catch (Throwable ex) {
-            subscriber.onError(ex);
+            if (!subscriber.isDisposed()) {
+                subscriber.onError(ex);
+            }
         }
 
         subscriber.setCancellable(() -> {
@@ -103,17 +105,21 @@ abstract class BaseSingle<T> extends BaseRx<T> implements SingleOnSubscribe<T> {
             try {
                 onGoogleApiClientReady(apiClient, subscriber);
             } catch (Throwable ex) {
-                subscriber.onError(ex);
+                if (!subscriber.isDisposed()) {
+                    subscriber.onError(ex);
+                }
             }
         }
 
         @Override
         public void onConnectionSuspended(int cause) {
-            subscriber.onError(new GoogleAPIConnectionSuspendedException(cause));
+            if (!subscriber.isDisposed()) {
+                subscriber.onError(new GoogleAPIConnectionSuspendedException(cause));
+            }
         }
 
         @Override
-        public void onConnectionFailed(ConnectionResult connectionResult) {
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
             if(handleResolution && connectionResult.hasResolution()) {
                 observableSet.add(BaseSingle.this);
 
@@ -123,8 +129,9 @@ abstract class BaseSingle<T> extends BaseRx<T> implements SingleOnSubscribe<T> {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     ctx.startActivity(intent);
                 }
-            } else {
-                subscriber.onError(new GoogleAPIConnectionException("Error connecting to GoogleApiClient.", connectionResult));
+            } else if (!subscriber.isDisposed()) {
+                subscriber.onError(new GoogleAPIConnectionException(
+                        "Error connecting to GoogleApiClient.", connectionResult));
             }
         }
 
