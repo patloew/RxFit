@@ -30,7 +30,7 @@ class StatusErrorResultCallBack implements ResultCallback<Status> {
 
     @Override
     public void onResult(@NonNull Status status) {
-        if (!status.isSuccess()) {
+        if (!subscriber.isDisposed() && !status.isSuccess()) {
             subscriber.onError(new StatusException(status));
         }
     }

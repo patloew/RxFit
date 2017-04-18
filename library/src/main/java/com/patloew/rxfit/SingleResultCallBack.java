@@ -41,6 +41,10 @@ class SingleResultCallBack<T extends Result, R> implements ResultCallback<T> {
 
     @Override
     public void onResult(@NonNull T result) {
+        if (subscriber.isDisposed()) {
+            return;
+        }
+
         if (!result.getStatus().isSuccess()) {
             subscriber.onError(new StatusException(result.getStatus()));
         } else {
